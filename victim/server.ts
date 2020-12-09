@@ -1,4 +1,9 @@
-import { Application, Router, Context, send } from "https://deno.land/x/oak/mod.ts";
+import {
+  Application,
+  Context,
+  Router,
+  send,
+} from "https://deno.land/x/oak/mod.ts";
 import { bold, yellow } from "https://deno.land/std@0.77.0/fmt/colors.ts";
 
 const app = new Application();
@@ -40,31 +45,30 @@ export const saveBadCode = async ({
   request,
   response,
 }: {
-  request: any
-  response: any
+  request: any;
+  response: any;
 }) => {
   try {
     const body = await request.body();
     const values = await body.value;
     const script = values.badCode;
-    if(!script) {
-      throw("badCode field should have a value");
+    if (!script) {
+      throw ("badCode field should have a value");
     }
     await Deno.writeTextFile("./badCode.txt", script);
-  
-    response.body = { msg: 'bad code saved 😈' }
-    response.status = 200
-  } catch(e) {
+
+    response.body = { msg: "bad code saved 😈" };
+    response.status = 200;
+  } catch (e) {
     response.body = { msg: e };
     response.status = 400;
   }
-}
+};
 
 router.get("/get-token", (ctx: Context) => {
   ctx.cookies.set("creationDate", new Date().toISOString());
   const token = "reallySecretShit" + Math.floor(Math.random() * 100) + 1;
-  ctx.cookies.set("token", token,
-    {httpOnly: true, sameSite: true}); // in oak httpOnly è già true di default, grazie a strict il token sarà rubato solo in localhost
+  ctx.cookies.set("token", token, { httpOnly: true, sameSite: true }); // in oak httpOnly è già true di default, grazie a strict il token sarà rubato solo in localhost
   ctx.response.body = { token, msg: "added some 🍪" };
 });
 
@@ -74,9 +78,9 @@ router.get("/bad-code", async (ctx: Context) => {
   try {
     ctx.response.body = { badCode: await Deno.readTextFile("./badCode.txt") };
   } catch {
-    ctx.response.body = { msg: "no bad code available" }
-    ctx.response.status = 500
+    ctx.response.body = { msg: "no bad code available" };
+    ctx.response.status = 500;
   }
 });
 
-await app.listen({hostname: "localhost", port: 3000});
+await app.listen({ hostname: "localhost", port: 3000 });
